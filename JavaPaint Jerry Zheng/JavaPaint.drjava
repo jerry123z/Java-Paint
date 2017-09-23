@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<drjava version="drjava-20140826-r5761">
+  <project autorefresh="false" main="JavaPaint" manifest="" root="" work="">
+    <createjar file="Java Paint.jar" flags="12"/>
+    <source>
+      <file active="true" name="PrefFrame.java" package="" timestamp="30-May-2016 13:10:20">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="JavaPaint.java" package="" timestamp="13-Jan-2017 21:44:42">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="ColorChooserButton.java" package="" timestamp="29-May-2016 11:54:00">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="DrawFrame.java" package="" timestamp="13-Jan-2017 21:42:24">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="DrawPanel.java" package="" timestamp="13-Jan-2017 21:53:48">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="FileInput.java" package="" timestamp="29-May-2016 21:11:48">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="LinkedList.java" package="" timestamp="20-Apr-2016 15:18:44">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="LinkedListTest.java" package="" timestamp="07-Feb-2016 10:26:14">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="ListNode.java" package="" timestamp="20-Apr-2016 15:18:44">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyBoundedShape.java" package="" timestamp="29-May-2016 12:01:12">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyImage.java" package="" timestamp="29-May-2016 12:02:38">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyLine.java" package="" timestamp="29-May-2016 12:01:32">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyOval.java" package="" timestamp="29-May-2016 12:09:42">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyPath.java" package="" timestamp="13-Jan-2017 21:46:42">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyRectangle.java" package="" timestamp="29-May-2016 12:04:44">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyRoundedRectangle.java" package="" timestamp="29-May-2016 12:03:14">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="MyShape.java" package="" timestamp="29-May-2016 12:09:44">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="ScreenImage.java" package="" timestamp="13-Jan-2017 21:40:58">
+        <select from="0" to="0"/>
+        <scroll column="0" row="0"/>
+      </file>
+    </source>
+    <included/>
+    <excluded/>
+    <collapsed/>
+    <classpath/>
+    <breakpoints/>
+    <watches/>
+    <bookmarks/>
+    <preferences/>
+  </project>
+</drjava>

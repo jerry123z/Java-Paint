@@ -1,0 +1,260 @@
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+ /*Author: Jerry Zheng
+ *Last Edited: May 29th 2016
+ *Description a Draw Panel class that takes a JLabel object as a parameter
+ *It is a widget that allows for the user to draw lines rectangles and circles
+ */
+
+public class DrawPanel extends JPanel
+{
+    private LinkedList<MyShape> shapeObjects;
+    private final int line = 0;
+    private final int rectangle = 1;
+    private final int circle = 2;
+    private final int roundedRectangle = 3;
+    private final int pen = 4;
+    private int currentShapeType;
+    private MyShape currentShapeObject;
+    private Color currentShapeColor1;
+    private Color currentShapeColor2;
+    private Boolean currentShapeGradient;
+    private Boolean currentShapeFilled;
+    private int currentShapeStroke;
+    private Boolean currentShapeDashed;
+    private int currentShapeDashLength;
+    private JLabel statusLabel;
+    private ListNode finalUndo;
+
+   
+
+    // constructor with a JLabel object as a parameter. The constructor initializes all variables
+    public DrawPanel(JLabel label)
+    {
+        shapeObjects = new LinkedList<MyShape>();
+        setBackground( Color.WHITE );
+        statusLabel = label;
+        currentShapeType = line;
+        currentShapeObject = null;
+        currentShapeColor1 = Color.BLACK;
+        currentShapeColor2 = Color.WHITE;
+        currentShapeGradient = true;
+        currentShapeFilled = false;
+        currentShapeStroke = 1;
+        currentShapeDashed = false;
+        currentShapeDashLength = 3;
+        
+        MouseHandler handler = new MouseHandler();
+        addMouseListener( handler );
+        addMouseMotionListener( handler );
+
+    } // end DrawPanel constructor
+    
+     
+    // draw all the shapes using the recursive method with a Graphics object as a parameter
+    public void paintComponent( Graphics g )
+    {
+        super.paintComponent( g );
+        Graphics2D g2d = ( Graphics2D ) g; // cast g to Graphics2D
+
+        if (shapeObjects.frontNode() != null)
+        {
+            drawShape(shapeObjects.frontNode(), g2d);
+        }
+        if (currentShapeObject != null)
+        {
+            currentShapeObject.draw(g2d);
+        }
+    } // end method paintComponent
+    
+    //a recursive method to draw all the shapes in reverse order. it in a ListNode and a graphics object as parameters
+    @SuppressWarnings("unchecked")
+    public void drawShape(ListNode<MyShape> shapeNode, Graphics2D g2d)
+    {
+        if (shapeNode.getNext() != null)
+        {
+            drawShape(shapeNode.getNext(), g2d);
+        }
+        MyShape shape = shapeNode.getData();
+        shape.draw( g2d );
+    }// end method drawShape
+    
+    //undoes the last shape, if the last shape is the only shape in the list it will be stored into an alternate variable
+    public void undoLastShape()
+    {
+        if (shapeObjects.size() == 1 )
+        {
+            finalUndo = shapeObjects.getFrontNode();
+            shapeObjects.removeFront();
+            repaint();
+        }
+        else{
+            shapeObjects.removeFront();
+            repaint();
+        }
+    }// end method undoLastShape
+    
+    @SuppressWarnings("unchecked")
+    //will redo the last shape, if the list is empty if will check the alternate finalUndo variable
+    public void redoLastShape()
+    {
+        if (shapeObjects.frontNode() != null)
+        {
+            ListNode<MyShape> tempNode = shapeObjects.frontNode();
+            if (tempNode.getPrevious() != null)
+            {
+                tempNode = tempNode.getPrevious();
+                shapeObjects.addNodeFront(tempNode);
+            }
+            repaint();
+        }
+        else if (finalUndo != null)
+        {
+            shapeObjects.addNodeFront(finalUndo);
+            repaint();
+        }
+    }// end method redoLastShape
+    
+    //clears the linked list and sets the final Undo to null
+    public void clearDrawing()
+    {
+        shapeObjects.makeEmpty();
+        finalUndo = null;
+        repaint();
+    }// end method clearDrawing
+    
+    //mutator method for currentShapeType, accepting an int as a parameter
+    public void changeShapeType(int shapeType)
+    {
+        currentShapeType = shapeType;
+    }// end method changeShapeType, 
+    
+    //mutator method for currentShapeColor1, accepting a color as a parameter
+    public void changeShapeColor1( Color color)
+     {
+         currentShapeColor1 = color;
+     }// end method currentShapeColor1
+    
+    //mutator method for currentShapeColor2, accepting a color as a parameter
+    public void changeShapeColor2( Color color)
+     {
+         currentShapeColor2 = color;
+     }// end method currentShapeColor2
+    
+    //mutator method for currentShapeGradient, accepting a gradientPaint as a parameter
+    public void changeShapeGradient( Boolean gradient)
+     {
+         currentShapeGradient = gradient;
+     }// end method currentShapeGradient
+    
+    //mutator method for currentShapeStroke,  accepting an int as a parameter
+    public void changeShapeStroke( int stroke)
+     {
+         currentShapeStroke = stroke;
+     }// end method currentShapeColor2
+    
+     //mutator method for currentShapeFilled, accepting an boolean as a parameter
+     public void changeShapeFilled(boolean shapeFilled)
+     {
+         currentShapeFilled = shapeFilled;
+     }// end method currentShapeFilled
+     
+      //mutator method for currentShapeDashed, accepting an boolean as a parameter
+     public void changeShapeDashed(boolean shapeDashed)
+     {
+         currentShapeDashed = shapeDashed;
+     }// end method currentShapeDashed
+     
+      //mutator method for currentShapeDashLength, accepting an int as a parameter
+     public void changeShapeDashLength(int dashLength)
+     {
+         currentShapeDashLength = dashLength;
+     }// end method currentShapeDashLength
+     
+     //accessor method for the status label
+     public JLabel getStatusLabel()
+     {
+         return statusLabel;
+     }// end method getStatusLabel
+     
+     //method to load an image
+     public void loadImage(BufferedImage image)
+     {
+         shapeObjects.addFront(new MyImage(image));
+         repaint();
+     }//end method loadImage
+     
+     //handeler for mouse motion
+     private class MouseHandler extends MouseAdapter 
+     {
+         // handle mouse click event and determine which button was pressed
+         public void mousePressed( MouseEvent event )
+         {
+             int xOrigin = event.getX();
+             int yOrigin = event.getY();
+             if (currentShapeObject == null){
+                 if( currentShapeType == line){
+                     currentShapeObject = new MyLine(xOrigin, yOrigin, xOrigin, yOrigin, currentShapeColor1, currentShapeColor2, currentShapeGradient, currentShapeStroke, currentShapeDashed, currentShapeDashLength);
+                 }
+                 else if (currentShapeType == rectangle){
+                     currentShapeObject = new MyRectangle(xOrigin, yOrigin, xOrigin, yOrigin, currentShapeColor1, currentShapeColor2, currentShapeGradient, currentShapeStroke, currentShapeDashed, currentShapeDashLength, currentShapeFilled);
+                 }
+                 else if (currentShapeType == circle){
+                     currentShapeObject = new MyOval(xOrigin, yOrigin, xOrigin, yOrigin, currentShapeColor1, currentShapeColor2, currentShapeGradient, currentShapeStroke, currentShapeDashed, currentShapeDashLength, currentShapeFilled);
+                 }
+                 else if (currentShapeType == roundedRectangle){
+                     currentShapeObject = new MyRoundedRectangle(xOrigin, yOrigin, xOrigin, yOrigin, currentShapeColor1, currentShapeColor2, currentShapeGradient, currentShapeStroke, currentShapeDashed, currentShapeDashLength, currentShapeFilled);
+                 }
+                 else if (currentShapeType == pen){
+                     currentShapeObject = new MyPath(xOrigin, yOrigin, xOrigin, yOrigin, currentShapeColor1, currentShapeColor2, currentShapeGradient, currentShapeStroke, currentShapeDashed, currentShapeDashLength);
+                 }
+                 repaint();
+                 statusLabel.setText("( "+event.getX()+" , "+event.getY()+" )");
+             }
+         } // end method mousePressed
+         
+         //handle mouse dragged event
+         public void mouseDragged( MouseEvent event )
+         {
+             if (currentShapeObject != null){
+                 currentShapeObject.setx2(event.getX());
+                 currentShapeObject.sety2(event.getY());
+                 if (currentShapeType == pen){//if statement exclusivly for the pen tool
+                     currentShapeObject.extend();
+                 }
+                 statusLabel.setText("( "+event.getX()+" , "+event.getY()+" )");
+                 repaint();
+             }
+         }// end method mouseDragged
+         
+         //handle mouse released event
+         public void mouseReleased( MouseEvent event)
+         {
+             if (currentShapeObject != null){
+                 currentShapeObject.setx2(event.getX());
+                 currentShapeObject.sety2(event.getY());
+                 if (currentShapeType == pen){//if statement exclusivly for the pen tool
+                     currentShapeObject.close();
+                 }
+                 shapeObjects.addFront(currentShapeObject);
+                 currentShapeObject = null;
+                 repaint();
+                 statusLabel.setText("( "+event.getX()+" , "+event.getY()+" )");
+             }
+         }// end method mouseReleased
+         
+         //handle mouse moved event
+         public void mouseMoved(MouseEvent event)
+         {
+             statusLabel.setText("( "+event.getX()+" , "+event.getY()+" )");
+         }
+         
+     }//end MouseHandler
+
+} // end class DrawPanel

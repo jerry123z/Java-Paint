@@ -1,0 +1,64 @@
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.GradientPaint;
+import java.awt.geom.Path2D;
+import java.awt.BasicStroke;
+import java.awt.Point;
+
+/*Author: Jerry Zheng
+ *Last Edited: May 29th 2016
+ *Description a Path2D shape object class with xy coordinates, color, gradient, stroke, dashed, dashlength, start, stop, stroke, and Path2D variables.  This extends MyBoundedShape
+ */
+
+public class MyPath extends MyShape
+{
+    private Point start;
+    private Point stop;
+    private Path2D path;
+    private BasicStroke stroke;
+    
+    //constructor with input valeus
+    public MyPath(int x1, int y1, int x2, int y2, Color color1, Color color2, boolean gradient, int stroke, boolean dashed, int dashLength)
+    {
+        super(x1, y1, x2, y2, color1, color2, gradient, stroke, dashed, dashLength);
+        this.start = new Point(x1,y1);
+        path = new Path2D.Double();
+    }
+    
+    //adds new points on the line
+    public void extend()
+    {
+        path.moveTo(getx1(), gety1());
+        path.lineTo(getx2(), gety2());
+        setx1(getx2());
+        sety1(gety2());
+    }
+    
+    //closes off the line
+    public void close()
+    {
+        try {
+            path.closePath();
+        } catch(Exception ingore) {
+        }
+    }
+    
+    //actually draws the shape
+    public void draw( Graphics2D g2d )
+    {
+        
+        if( ifGradient() == false)
+            g2d.setPaint( getColor1() );
+        else
+            g2d.setPaint( new GradientPaint( getx1(), gety1(),  getColor1() ,getx2(), gety2(), getColor2(), true));
+        
+         if (getDashed() == true)
+             stroke = new BasicStroke( getStroke(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, getDashLength(), new float[]{getDashLength()}, 0 ); 
+        else
+            stroke = new BasicStroke( getStroke() );
+        
+        //both are required for a smooth stroke
+        g2d.fill(stroke.createStrokedShape(path));
+        g2d.draw(stroke.createStrokedShape(path));
+    }
+}

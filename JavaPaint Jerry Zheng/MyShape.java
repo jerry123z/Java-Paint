@@ -1,0 +1,124 @@
+/*Author: Jerry Zheng
+ *Last Edited: May 29th 2016
+ *Description a shape object class with xy coordinates, color, gradient, stroke, dashed, dashlength variables.
+ */
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
+import java.awt.GradientPaint; 
+ 
+abstract class MyShape{
+    private int x1; // x coordinate of first endpoint
+    private int y1; // y coordinate of first endpoint
+    private int x2; // x coordinate of second endpoint
+    private int y2; // y coordinate of second endpoint
+    private Color myColor1; // color of this shape
+    private Color myColor2;
+    private boolean gradient;
+    private int stroke;
+    private boolean dashed;
+    private int dashLength;
+    
+    // constructor with input values
+    protected MyShape( int x1, int y1, int x2, int y2, Color color1, Color color2, boolean gradient, int stroke, boolean dashed, int dashLength)
+    {
+        this.x1 = x1; // set x coordinate of first endpoint
+        this.y1 = y1; // set y coordinate of first endpoint
+        this.x2 = x2; // set x coordinate of second endpoint
+        this.y2 = y2; // set y coordinate of second endpoint
+        this.myColor1 = color1;
+        this.myColor2 = color2;
+        this.gradient = gradient;
+        this.stroke = stroke;
+        this.dashed = dashed;
+        this.dashLength = dashLength;
+    } // end MyShapee constructor
+    
+    protected MyShape()
+    {
+        this(0,0,0,0, Color.black, Color.white, false, 1, false, 1);
+    }
+    
+    //blank method for the MyPath Pen Tool
+    public void extend(){
+    }
+    //blank method for the MyPath Pen Tool
+    public void close(){
+    }
+    // accessor and mutator methods for points and colors
+    protected int getx1()
+    {
+        return x1;
+    }
+    
+    protected int getx2()
+    {
+        return x2;
+    }
+    
+    protected int gety1()
+    {
+        return y1;
+    }
+    
+    protected int gety2()
+    {
+        return y2;
+    }
+    
+    protected Color getColor1()
+    {
+        return myColor1;
+    }
+    
+    protected Color getColor2()
+    {
+        return myColor2;
+    }
+    protected boolean ifGradient()
+    {
+        return gradient;
+    }
+    protected void setx1(int x1)
+    {
+        this.x1 = x1;
+    }
+    
+    protected void setx2(int x2)
+    {
+        this.x2 = x2;
+    }
+    
+    protected void sety1(int y1)
+    {
+        this.y1 = y1;
+    }
+    
+    protected void sety2(int y2)
+    {
+        this.y2 = y2;
+    }
+    
+    protected void setColor (Color color1, Color color2, boolean gradient)
+    {
+        myColor1 = color1;
+        myColor2 = color2;
+    }
+        
+    protected int getStroke()
+    {
+        return stroke;
+    }
+    
+    protected boolean getDashed()
+    {
+        return dashed;
+    }
+    
+    protected int getDashLength()
+    {
+        return dashLength;
+    }
+    //Every type of MyShape object must be able to draw itself given a graphics parameter
+    abstract public void draw( Graphics2D g2d );
+} // end class MyShape

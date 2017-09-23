@@ -1,0 +1,370 @@
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import javax.swing.JPanel;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+import javax.swing.JOptionPane;
+import java.awt.Color;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.JFileChooser;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
+/*Author: Jerry Zheng
+ *Last Edited: May 28th 2016
+ *Description a Draw frame class that takes a draw panl object as a parameter and puts into into a GUI
+ *along with buttons.
+ */
+
+public class DrawFrame extends JFrame
+{
+    //layout and widgets
+    private BorderLayout layout;
+    private JButton color1Button;
+    private JButton color2Button;
+    private JComboBox shapeTypeBox;
+    private final String shapes[] = {"Line", "Rectangle", "Circle", "Rounded Rectangle", "Pen"};
+    private JCheckBox fillBox;
+    private JCheckBox gradientBox;
+    private GridLayout widgetGrid;
+    private JPanel widgetPanel;
+    private DrawPanel paintPanel;
+    private JLabel strokeLabel;
+    private JTextField strokeField;
+    private JCheckBox dashBox;
+    private JLabel dashLabel;
+    private JTextField dashField;
+    
+    private JMenuBar menuBar; //menu bar where menus are added
+    private JMenu fileMenu;
+    private JMenuItem openMenuItem;
+    private JMenuItem saveMenuItem;
+    private JMenuItem aboutMenuItem;
+    private JMenuItem prefsMenuItem;
+    private JMenuItem exitMenuItem;
+    private JMenu editMenu;
+    private JMenuItem undoMenuItem;
+    private JMenuItem redoMenuItem;
+    private JMenuItem clearMenuItem;
+    
+    JFileChooser fileChooser = new JFileChooser();//file Chooser to open files
+    
+    
+    @SuppressWarnings("unchecked")
+    public DrawFrame( DrawPanel drawPanel )
+    {
+        super( "Java Paint" );
+        
+        //Set the menu bar and items
+        menuBar = new JMenuBar();
+        fileMenu = new JMenu("File");
+        editMenu = new JMenu("Edit");
+        
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+        
+        openMenuItem = new JMenuItem("Open");
+        saveMenuItem = new JMenuItem("Save");
+        aboutMenuItem = new JMenuItem("About");
+        prefsMenuItem = new JMenuItem("Preferences");
+        exitMenuItem = new JMenuItem("Exit");
+        
+        fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );//create the file Chooser
+        
+        fileMenu.add(openMenuItem);
+        openMenuItem.addActionListener(           
+                                       new ActionListener()
+                                           {   
+            public void actionPerformed( ActionEvent event )
+            {
+                int result;        
+                result = fileChooser.showOpenDialog( null );
+                if ( result == JFileChooser.CANCEL_OPTION ) {
+                }
+                else{   
+                    try {
+                        BufferedImage image = ImageIO.read(fileChooser.getSelectedFile());//create a new image based on selected file
+                        drawPanel.loadImage(image);
+                    }
+                    catch(java.io.IOException e){
+                        JOptionPane.showMessageDialog( null, e, "Openning Error", JOptionPane.ERROR_MESSAGE );
+                    }
+                    catch(java.lang.IllegalArgumentException e){
+                        JOptionPane.showMessageDialog( null, e, "Openning Error", JOptionPane.ERROR_MESSAGE );
+                    }
+                }
+                
+            } 
+        } 
+        );
+        KeyStroke ctrlOKey = KeyStroke.getKeyStroke("control O");
+        openMenuItem.setAccelerator(ctrlOKey);
+        
+        fileMenu.add(saveMenuItem);
+        saveMenuItem.addActionListener(           
+                                       new ActionListener()
+                                           {   
+            public void actionPerformed( ActionEvent event )
+            {
+                BufferedImage image = ScreenImage.createImage(drawPanel);
+                String saveName = JOptionPane.showInputDialog("Enter a file name:");
+                try{
+                    ScreenImage.writeImage(image, saveName);//save an image of the draw panel
+                }
+                catch(java.io.IOException e){
+                    JOptionPane.showMessageDialog( null, e, "Save Error", JOptionPane.ERROR_MESSAGE );
+                }
+            } 
+        } 
+        );
+        KeyStroke ctrlSKey = KeyStroke.getKeyStroke("control S");
+        saveMenuItem.setAccelerator(ctrlSKey);
+        
+        fileMenu.add(aboutMenuItem);
+        aboutMenuItem.addActionListener(           
+                                        new ActionListener()
+                                            {   
+            public void actionPerformed( ActionEvent event )
+            {
+                JOptionPane.showMessageDialog( null, "Here is my paint GUI program. \n Created by Jerry Zheng \n May 28 2016 ", "About", JOptionPane.INFORMATION_MESSAGE );
+            } 
+        } 
+        );
+        
+        fileMenu.add(prefsMenuItem);
+        prefsMenuItem.addActionListener(           
+                                        new ActionListener()
+                                            {   
+            public void actionPerformed( ActionEvent event )
+            {
+                JFrame frame = new PrefFrame();//open an entirely new JFrame for preferences
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.setSize( 240, 280);
+                frame.setVisible( true );
+            } 
+        } 
+        );
+        fileMenu.add(exitMenuItem);
+        exitMenuItem.addActionListener(           
+                                       new ActionListener()
+                                           {   
+            public void actionPerformed( ActionEvent event )
+            {
+                System.exit(0);
+            } 
+        } 
+        );
+        
+        undoMenuItem = new JMenuItem("Undo");
+        undoMenuItem.addActionListener(           
+                                       new ActionListener()
+                                           {   
+            public void actionPerformed( ActionEvent event )
+            {
+                paintPanel.undoLastShape();
+            } 
+        } 
+        );
+        KeyStroke ctrlZKey = KeyStroke.getKeyStroke("control Z");
+        undoMenuItem.setAccelerator(ctrlZKey);
+        
+        redoMenuItem = new JMenuItem("Redo");
+        redoMenuItem.addActionListener(           
+                                       new ActionListener()
+                                           {   
+            public void actionPerformed( ActionEvent event )
+            {
+                paintPanel.redoLastShape();
+            } 
+        } 
+        );
+        KeyStroke ctrlYKey = KeyStroke.getKeyStroke("control Y");
+        redoMenuItem.setAccelerator(ctrlYKey);
+        
+        clearMenuItem = new JMenuItem("Clear");
+        clearMenuItem.addActionListener(           
+                                        new ActionListener()
+                                            {   
+            public void actionPerformed( ActionEvent event )
+            {
+                paintPanel.clearDrawing();
+            } 
+        } 
+        );
+        KeyStroke ctrlXKey = KeyStroke.getKeyStroke("control X");
+        clearMenuItem.setAccelerator(ctrlXKey);
+        
+        editMenu.add(undoMenuItem);
+        editMenu.add(redoMenuItem);
+        editMenu.add(clearMenuItem);
+        
+        setJMenuBar(menuBar);
+        
+        //Now for the non-MenuBar items
+        paintPanel = drawPanel;
+        layout = new BorderLayout( 5, 5 ); 
+        setLayout( layout ); // set frame layout with gaps
+        
+        widgetGrid = new GridLayout(1,10); //set a panel for the buttons and combo boxes
+        widgetPanel = new JPanel();
+        widgetPanel.setLayout(widgetGrid);
+        
+        //Load preferences
+        FileInput prefValues = new FileInput();
+        
+        //color button 1 and action listener
+        ColorChooserButton color1Button = new ColorChooserButton(new Color(prefValues.getColor1Red(),prefValues.getColor1Green(),prefValues.getColor1Blue()));
+        color1Button.addColorChangedListener(new ColorChooserButton.ColorChangedListener() {
+            @Override
+            public void colorChanged(Color newColor) {
+                paintPanel.changeShapeColor1( newColor );
+            }
+        });
+        paintPanel.changeShapeColor1( new Color(prefValues.getColor1Red(),prefValues.getColor1Green(),prefValues.getColor1Blue()) );
+        
+        //color button 2 and action listener
+        ColorChooserButton color2Button = new ColorChooserButton(new Color(prefValues.getColor2Red(),prefValues.getColor2Green(),prefValues.getColor2Blue()));
+        color2Button.addColorChangedListener(new ColorChooserButton.ColorChangedListener() {
+            @Override
+            public void colorChanged(Color newColor) {
+                paintPanel.changeShapeColor2( newColor );
+            }
+        });
+        paintPanel.changeShapeColor2( new Color(prefValues.getColor2Red(),prefValues.getColor2Green(),prefValues.getColor2Blue()) );
+        
+        
+        //shape combo box and event listener and loading the preferences after action listeners are created
+        shapeTypeBox = new JComboBox( shapes ); 
+        shapeTypeBox.setMaximumRowCount( 5 );
+        shapeTypeBox.addItemListener(
+                                     new ItemListener()
+                                         {
+            // handle JComboBox event
+            public void itemStateChanged( ItemEvent event )
+            {
+                // determine whether check box selected
+                if ( event.getStateChange() == ItemEvent.SELECTED )
+                    paintPanel.changeShapeType( shapeTypeBox.getSelectedIndex() );
+            } 
+        } 
+        ); 
+        shapeTypeBox.setSelectedIndex(prefValues.getDefaultShape());
+        paintPanel.changeShapeType( prefValues.getDefaultShape() );
+        
+        //fill check box and event listener
+        fillBox = new JCheckBox("Filled");
+        fillBox.addItemListener(
+                                new ItemListener()
+                                    {
+            public void itemStateChanged( ItemEvent event )
+            {
+                paintPanel.changeShapeFilled( fillBox.isSelected() ? true : false);
+            } 
+        } 
+        );
+        
+        //check fillbox preference
+        if (prefValues.getFillBox())
+            fillBox.doClick();
+        
+        //gradient check box and event listener
+        gradientBox = new JCheckBox("Gradient");
+        gradientBox.addItemListener(
+                                    new ItemListener()
+                                        {
+            public void itemStateChanged( ItemEvent event )
+            {
+                paintPanel.changeShapeGradient( gradientBox.isSelected() ? true : false);
+            } 
+        } 
+        ); 
+        //check gradientBox preference
+        if (prefValues.getGradientBox())
+            gradientBox.doClick();
+        
+        //stroke label, field and listener
+        strokeLabel = new JLabel("Stroke Width:");
+        strokeField = new JTextField(""+prefValues.getStrokeField());
+        strokeField.addActionListener(
+                                      new ActionListener()
+                                          {   
+            public void actionPerformed( ActionEvent event )
+            {
+                try{
+                    if (Integer.parseInt(event.getActionCommand()) < 1)
+                        throw new java.lang.NumberFormatException();
+                    paintPanel.changeShapeStroke( Integer.parseInt(event.getActionCommand()));
+                }
+                catch(java.lang.NumberFormatException e)
+                {
+                    JOptionPane.showMessageDialog( null, "Please enter a positive integer", "Value Error", JOptionPane.INFORMATION_MESSAGE );
+                }
+            } 
+        } 
+        );
+        paintPanel.changeShapeStroke(prefValues.getStrokeField());
+        
+        dashBox = new JCheckBox("Dashed");
+        dashBox.addItemListener( new ItemListener()
+                                    {
+            public void itemStateChanged( ItemEvent event )
+            {
+                paintPanel.changeShapeDashed( dashBox.isSelected() ? true : false);
+            } 
+        } 
+        ); 
+        dashLabel = new JLabel("Dash Length:");
+        dashField = new JTextField(""+prefValues.getDashField());
+        dashField.addActionListener(
+                                    new ActionListener()
+                                        {   
+            public void actionPerformed( ActionEvent event )
+            {
+                try{
+                    if (Integer.parseInt(event.getActionCommand()) < 1)
+                        throw new java.lang.NumberFormatException();
+                    paintPanel.changeShapeDashLength( Integer.parseInt(event.getActionCommand()));
+                }
+                catch(java.lang.NumberFormatException e)
+                {
+                    JOptionPane.showMessageDialog( null, "Please enter a positive integer", "Value Error", JOptionPane.INFORMATION_MESSAGE );
+                }
+            } 
+        } 
+        );
+        paintPanel.changeShapeDashLength(prefValues.getDashField());
+        
+        //check dashBox preference
+        if (prefValues.getDashBox())
+            dashBox.doClick();
+        
+        //putting it all together
+        widgetPanel.add( color1Button );
+        widgetPanel.add( color2Button );
+        widgetPanel.add( shapeTypeBox );
+        widgetPanel.add( fillBox );
+        widgetPanel.add( gradientBox );
+        widgetPanel.add(strokeLabel);
+        widgetPanel.add(strokeField);
+        widgetPanel.add(dashBox);
+        widgetPanel.add(dashLabel);
+        widgetPanel.add(dashField);
+        
+        
+        add( widgetPanel, BorderLayout.NORTH );
+        add( paintPanel, BorderLayout.CENTER );
+        add( paintPanel.getStatusLabel(), BorderLayout.SOUTH );
+        
+    }
+}//end class DrawFrame
